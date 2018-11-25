@@ -30,3 +30,18 @@
     transform: rotate(360deg);
   }
 }
+
+.container-full{
+  background-color: #eeeeee;
+  width:100%;
+  height: 100%;
+  min-height: 100vh;
+}
+#nav{
+  padding-left: 30px;
+}
+#chat{
+  padding-top: 30px;
+  height: 100%;
+  min-height: 100vh;
+}
