@@ -5,6 +5,7 @@ import * as firebase from 'firebase';
 import RoomList from './components/RoomList';
 import CreateRoom from './components/CreateRoom';
 import MessageList from './components/MessageList';
+import User from './components/User';
 
 var config = {
   apiKey: "AIzaSyCBeSwO1FDo9dkzU-1VdxnXWi0XspQps7c",
@@ -25,8 +26,8 @@ class App extends Component {
       rooms: [],
       roomsRef: [],
       currRoom: null,
-      newRoom: false
-
+      newRoom: false,
+      user: null
     };
     this.state.roomsRef = firebase.database().ref('rooms');
   }
@@ -53,6 +54,17 @@ class App extends Component {
     this.setState({currRoom: this.state.rooms[index]});
   }
 
+  setUser(user){
+    this.setState({user: user});
+  }
+
+  removeUser(){
+    this.setState({user:null});
+    firebase.auth().signOut();
+    console.log("remove");
+  }
+
+
   componentDidMount() {
     this.state.roomsRef.on('child_added', snapshot => {
       const room = snapshot.val();
@@ -75,13 +87,18 @@ class App extends Component {
     return (
         <div className="container-full" >
           <div className = "row">
-            <div className ="col-md-3" id="nav">
+            <div className ="col-md-2" id="nav">
             <h2>Bloc Chat</h2>
-            <button onClick={() => this.createRoomAlert()}>New Room</button>
-            < RoomList rooms={this.state.rooms} selectRoom={(e)=>this.selectRoom(e)} />
+            <User firebase={firebase} setUser={(e)=>this.setUser(e)} removeUser={()=>this.removeUser()} user={this.state.user}/>
+            <RoomList rooms={this.state.rooms} selectRoom={(e)=>this.selectRoom(e)} />
+            {this.state.user !== null ?
+              <button className="btn btn-outline-danger btn-lg btn-block" onClick={() => this.createRoomAlert()}>New Room</button>
+              : <p></p>
+            }
             </div>
-            <div className ="col-md-9 bg-light" id="chat">
+            <div className ="col-md-10 bg-light" id="chat">
               {content}
+
             </div>
           </div>
         </div>

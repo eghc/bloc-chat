@@ -12,7 +12,7 @@ class CreateRoom extends Component {
           <h4 className="card-title">Create a New Room</h4>
           <form onSubmit={this.props.done}>
             Name: <input type="text" name="name" ></input>
-            <input type="submit" value="Done"/>
+            <input type="submit"  className="btn btn-secondary" value="Done"/>
           </form>
         </div>
       </div>

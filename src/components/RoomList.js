@@ -8,10 +8,12 @@ class RoomList extends Component {
   render(){
     //console.log(this.state.rooms);
     return(
-      <div className="nav">
-        <ul className="nav navbar-nav">
+      <div>
+        <ul className="nav nav-pills flex-column">
           {this.props.rooms.map((room, index) =>
-            <li key={index} onClick={this.props.selectRoom} value={index}>{room.name}</li>
+            <li className="nav-item" key={index} >
+            <button className="btn btn-outline-secondary btn-lg btn-block" onClick={this.props.selectRoom} value={index}>{room.name}</button>
+            </li>
           )}
         </ul>
       </div>
