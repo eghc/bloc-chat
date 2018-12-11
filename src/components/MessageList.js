@@ -1,64 +1,115 @@
 import React, {Component} from 'react';
+import {Fragment} from 'react';
+import * as firebase from 'firebase';
+import SendMsg from './SendMsg';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import { withStyles } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+
+
+const styles = theme => ({
+  messageStyle:{
+    paddingBottom: 60
+  },
+})
 
 class MessageList extends Component{
   constructor(props){
     super(props);
-    this.state ={
+    this.state = {
       messages: [],
-      messagesRef: [],
-      stopUpdate: false
+      messagesRef:null,
+      stopUpdate: false,
+      placeholder: ""
     }
-    this.state.messagesRef = this.props.firebase.database().ref('messages');
+    this.state.messagesRef = firebase.database().ref('messages');
   }
 
-  resetMessages(){
-    this.setState({messages:[]});
+  sendMessage(e){
+
+    //e.preventDefault();
+    let content = e.currentTarget.value;
+    let username =this.props.user !== null ? this.props.user.displayName: "Guest";
+    let sentAt = firebase.database.ServerValue.TIMESTAMP;
+    // if(this.props.user !== null){
+    //   newMsg.username = this.props.user.displayName;
+    // }
+    //this.setState({messages: this.state.messages.push(newMsg)});
+    this.state.messagesRef.child(this.props.currRoom.key).push({
+      content: content,
+      username: username,
+      sentAt: sentAt
+    });
+
+    this.setState({placeholder: ""});
+
   }
 
   componentDidMount() {
-    this.state.messagesRef.on('child_added', snapshot => {
+    let messages = [];
+    //this.setState({messagesRef: this.state.messagesRef.child(this.props.currRoom.key)});
+    this.state.messagesRef.child(this.props.currRoom.key).on('child_added', snapshot => {
         const message = snapshot.val();
         message.key = snapshot.key;
-        if(message.roomId == this.props.currRoom.key){
-          this.setState({ messages: this.state.messages.concat(message) });
-        }
+        //console.log(snapshot.val().sentAt);
+        let time = new Date(snapshot.val().sentAt);
+        message.sentAt = time.toString().split(" ").slice(1,5).join(" ");
+        messages.push(message);
+        this.setState({messages:messages});
       });
   }
+
   componentDidUpdate(prevProps){
     //console.log(this.props.)
     if(this.props.currRoom.key !== prevProps.currRoom.key){
-      this.resetMessages();
-
-      let arr = []
-      this.state.messagesRef.on('child_added', snapshot => {
+      let messages = [];
+      //this.setState({messagesRef: this.state.messagesRef.child(this.props.currRoom.key)});
+      this.state.messagesRef.child(this.props.currRoom.key).on('child_added', snapshot => {
           const message = snapshot.val();
           message.key = snapshot.key;
-          if(message.roomId == this.props.currRoom.key){
-            arr.push(message);
-          }
+          //console.log(snapshot.val().sentAt);
+          let time = new Date(snapshot.val().sentAt);
+          message.sentAt = time.toString().split(" ").slice(1,5).join(" ");
+          messages.push(message);
+          this.setState({messages:messages});
         });
-      this.setState({messages: arr});
+      if(messages.length === 0){
+        this.setState({messages:[]});
+      }
     }
   }
 
   render(){
+    const { classes } = this.props;
+    //<Typography paragraph>
     return(
       <div>
-        <h1>{this.props.currRoom.name}</h1>
-        <table>
-          {this.state.messages.map((message, index) =>
-            <tr key={index}>
-              <td className="message">
-              <h4 >{message.username}</h4>
-              {message.content}
-              </td>
-              <td><i> {message.sentAt}</i></td>
-            </tr>
-          )}
-        </table>
-      </div>
+      <CssBaseline />
+      <List className={classes.messageStyle}>
+          {this.state.messages.map((message, index) => (
+            <Fragment key={index}>
+              <ListItem>
+                <ListItemText primary={message.username} secondary={message.content} />
+                {message.sentAt}
+              </ListItem>
+            </Fragment>
+          ))}
+
+        </List>
+          <SendMsg
+          user={this.props.user}
+          currRoom={this.props.currRoom}
+          sendMessage={(e)=>this.sendMessage(e)}
+          placeholder = {this.state.placeholder}
+          />
+        </div>
+
+
     );
   }
 }
 
-export default MessageList;
+export default withStyles(styles)(MessageList);

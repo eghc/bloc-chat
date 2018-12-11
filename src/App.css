@@ -49,6 +49,7 @@ table {
     border-collapse: collapse;
     width: 100%;
     padding: 20px;
+    margin-top: 40px;
 }
 
 th, td {
@@ -71,4 +72,17 @@ tr:nth-child(even) {
 } */
 .message{
   font-size: 14px;
+}
+#sendMessage{
+  position: fixed;
+  bottom: -20px;
+  width:80%;
+}
+.jumbotron{
+  height: 20px;
+  position: fixed;
+  top: -40px;
+  width: 90%;
+  margin-left: -20px;
+  text-align: left;
 }

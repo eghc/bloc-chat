@@ -1,24 +1,28 @@
 import React, {Component} from 'react';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Button from '@material-ui/core/Button';
 
 class RoomList extends Component {
-  constructor(props){
-    super(props);
-  }
 
   render(){
     //console.log(this.state.rooms);
+
     return(
-      <div>
-        <ul className="nav nav-pills flex-column">
+      <List>
           {this.props.rooms.map((room, index) =>
-            <li className="nav-item" key={index} >
-            <button className="btn btn-outline-secondary btn-lg btn-block" onClick={this.props.selectRoom} value={index}>{room.name}</button>
-            </li>
+            <ListItem button  key={index}  >
+              <Button onClick={this.props.selectRoom} value={index}>
+              <ListItemText value={index} primary={room.name}/>
+              </Button>
+            </ListItem>
           )}
-        </ul>
-      </div>
+      </List>
     );
   }
 }
+
 
 export default RoomList;
